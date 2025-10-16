@@ -40,14 +40,26 @@ declare global {
 
 // —— 组件本体 ——
 // 1) 启动时从 window.openai.toolOutput 里取数据
-// 2) 渲染成一张卡片（牌名 + 正/逆位徽标 + 关键词 + 今日运势）
+// 2) 持续监听数据变化（因为数据可能在组件加载后才注入）
+// 3) 渲染成一张卡片（牌名 + 正/逆位徽标 + 关键词 + 今日运势）
 function App() {
   const [out, setOut] = useState<ToolOutput | null>(null);
 
   useEffect(() => {
-    // 从 ChatGPT 注入的上下文中取出工具输出（后面第4步我们会把服务器接上）
+    // 立即尝试获取数据
     setOut(window.openai?.toolOutput ?? null);
-  }, []);
+    
+    // 持续轮询检查数据更新（每100ms检查一次）
+    const interval = setInterval(() => {
+      const newData = window.openai?.toolOutput;
+      if (newData && JSON.stringify(newData) !== JSON.stringify(out)) {
+        console.log("📥 检测到新数据:", newData);
+        setOut(newData);
+      }
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [out]);
 
   // 如果还没有数据（比如单独在浏览器里打开），给个占位
   if (!out?.card) {

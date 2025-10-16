@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DailyCard Preview</title>
+</head>
+<body>
+  <div id="dailycard-root"></div>
+  <script type="module">
+    // 模拟 ChatGPT 注入的 structuredContent
+    window.openai = {
+      toolOutput: {
+        card: {
+          name: "The Fool",
+          orientation: "upright",
+          keywords: ["新起点", "信任"],
+          description: "今天适合开始新旅程。"
+        }
+      }
+    };
+
+    // 加载你打包好的组件脚本
+    import("./dist/dailycard.js");
+  </script>
+</body>
+</html>
